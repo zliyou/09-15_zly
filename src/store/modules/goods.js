@@ -52,7 +52,7 @@ export default {
 
     async getGoodslist({ commit, state, dispatch }) {
       let res = await getGoodslist(state.size, state.page);
-
+      
       commit('GETUSER', res.list)
       dispatch('GetTotal')
     },

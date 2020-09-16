@@ -6,7 +6,7 @@ import $axios from '@/comm/$axios.js';
 export async function getGoodslist(size = 2, page = 1) {//获取列表
   console.log("进入请求了");
   let res = await $axios.get("/goodslist", { params: { size, page } });
-  console.log(res);
+  // console.log(res);
   if (res.code == 200 && res.list) {
     return res
   } else {

@@ -1,11 +1,42 @@
 <!-- 表格 -->
 <template>
   <div>
-    <el-table :data="goodsList" border style="width: 100%" row-key="id">
-      <!--  :tree-props="{children: 'children'}" -->
-      <el-table-column prop="first_cateid" align="center" label="一级分类编号"></el-table-column>
-      <el-table-column prop="goodsname" align="center" label="二级分类"></el-table-column>
-      
+    <el-table :data="goodsList" style="width: 100%">
+      <el-table-column type="expand">
+        <template slot-scope="props">
+          <el-form label-position="left" inline class="demo-table-expand">
+            <el-form-item label="一级分类名称">
+              <span>{{ props.row.firstcatename }}</span>
+            </el-form-item>
+
+            <el-form-item label="商品名称">
+              <span>{{ props.row.goodsname }}</span>
+            </el-form-item>
+            <el-form-item label="二级分类名称">
+              <span>{{ props.row.secondcatename }}</span>
+            </el-form-item>
+            <el-form-item label="商品价格">
+              <span>{{ props.row.price }}</span>
+            </el-form-item>
+            <el-form-item label="市场价格">
+              <span>{{ props.row.market_price }}</span>
+            </el-form-item>
+            <!-- <el-form-item label="商品规格">
+            <span>{{ props.row.specsid }}</span>
+            </el-form-item>-->
+            <el-form-item label="商品属性">
+              <span v-for="(item,idx) in props.row.specsattr" :key="idx">{{ item }}</span>
+            </el-form-item>
+            <el-form-item label="商品图片">
+              <img :src="props.row.img |imgUrl" v-if="props.row.img" width="80" />
+              <span v-else>暂无图片</span>
+            </el-form-item>
+          </el-form>
+        </template>
+      </el-table-column>
+
+      <el-table-column label="商品名称" prop="goodsname"></el-table-column>
+      <el-table-column label="商品价格" prop="price"></el-table-column>
       <el-table-column prop="status" align="center" label="状态">
         <template slot-scope="scope">
           <el-tag type="success" v-if="scope.row.status==1">启用</el-tag>
@@ -24,7 +55,7 @@
       @size-change="setsize"
       @current-change="setpage"
       :current-page="page"
-      :page-sizes="[1, 2, 3, 4]"
+      :page-sizes="[10, 20, 30, 40]"
       :page-size="size"
       layout="total, sizes, prev, pager, next, jumper"
       :total="total"
@@ -47,7 +78,6 @@ export default {
     this.GetTotal();
 
     if (!this.goodsList.length) {
-      
       this.getGoodslist();
     }
   },
@@ -76,7 +106,6 @@ export default {
       console.log(this.specsList);
     },
     async del(item) {
-      
       this.$confirm("此操作将永久删除该文件, 是否继续?", "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
@@ -84,14 +113,13 @@ export default {
       })
         .then(async () => {
           let res = await delGoods(item.id);
-          
+
           if (res.code == 200) {
-            
-            if (this.specsList.length == 1 && this.page != 1) {
+            if (this.goodsList.length == 1 && this.page != 1) {
               this.SETPAGE(this.page - 1);
             }
-            
-            this.getSpecslist();
+
+            this.getGoodslist();
             this.$message.success(res.msg);
           } else {
             this.$message.error(res.msg);
@@ -107,4 +135,16 @@ export default {
 };
 </script>
 <style lang='less' scoped>
+.demo-table-expand {
+  font-size: 0;
+}
+.demo-table-expand label {
+  width: 90px;
+  color: #99a9bf;
+}
+.demo-table-expand .el-form-item {
+  margin-right: 0;
+  margin-bottom: 0;
+  width: 50%;
+}
 </style>

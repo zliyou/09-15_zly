@@ -97,6 +97,7 @@
               <el-row>
                 <el-col :span="10">
                   <el-form-item label>
+                    
                     <vue-wangeditor
                       ref="wangedit"
                       class="fwb"
@@ -125,6 +126,7 @@
 import { mapState, mapGetters, mapActions } from "vuex";
 import { addGoods, editGoods } from "@/require/goods";
 import vueWangeditor from "vue-wangeditor";
+
 let goodsinfo = {
   first_cateid: "",
   second_cateid: "",
@@ -145,7 +147,7 @@ export default {
     return {
       goodsinfo: { ...goodsinfo },
       rules: {
-        goodsname: [{ required: true, message: "必填", trigger: "blur" }],
+        goodsname: [{ required: true, message: "必填", trigger: "blur" }]
       },
       imageUrl: "",
       dialogVisible: false,
@@ -189,6 +191,7 @@ export default {
     ...mapActions({
       getCategory: "category/getCategory",
       getSpecslist: "specs/getSpecslist",
+      getGoodslist: "goods/getGoodslist",
     }),
     sse(file, fileList) {
       // this.filelist = fileList;
@@ -204,7 +207,7 @@ export default {
       (this.erjifl = []), (this.goodsinfo.second_cateid = "");
       this.categoryList.forEach((ele) => {
         if (ele.id == v) {
-          console.log(ele.children);
+          // console.log(ele.children);
           this.erjifl = ele.children;
         }
       });
@@ -215,11 +218,15 @@ export default {
       this.specsList.forEach((ele) => {
         if (ele.id == v) {
           // console.log(ele.attrs)
+
           this.spsx = ele.attrs;
         }
       });
     },
     goodsinfor(val) {
+      
+      // console.log(val.specsattr.split(','));
+      
       if (val.img) {
         this.filelist = [
           {
@@ -228,9 +235,16 @@ export default {
           },
         ];
       }
-
-      val.children ? delete val.children : "";
-
+      
+      
+      
+      this.$nextTick(()=>{
+        this.$refs.wangedit.setHtml(val.description);
+      })
+      val.specsattr =val.specsattr instanceof Array?val.specsattr: val.specsattr.split(',');
+      this.yjfl(val.first_cateid);
+      this.spgg(val.specsid);
+      
       goodsinfo = { ...val };
       this.goodsinfo = { ...val };
 
@@ -240,23 +254,33 @@ export default {
       this.goodsinfo.img = "";
     },
     async addCon() {
-      // console.log(this.goodsinfo);
-      // return;
+
+
+      
       let res = null;
       this.$refs.form.validate(async (res) => {
         if (res) {
+          "firstcatename" in this.goodsinfo
+            ? delete this.goodsinfo.firstcatename
+            : "";
+          "secondcatename" in this.goodsinfo
+            ? delete this.goodsinfo.secondcatename
+            : "";
+            this.goodsinfo.description = this.$refs.wangedit.getHtml();
           let md = new FormData();
           // console.log();
           for (let item in this.goodsinfo) {
             md.append(item, this.goodsinfo[item]);
           }
-          this.goodsinfo.description = this.$refs.wangedit.getHtml();
+          
           if (this.info.istit) {
+            
             // console.log("添加");
             res = await addGoods(md);
 
             // console.log(res);
           } else {
+            // return
             // console.log("修改");
             res = await editGoods(md);
           }
@@ -264,8 +288,8 @@ export default {
           if (res.code == 200 && res.list) {
             this.$message.success(res.msg);
             this.info.altshow = false;
-
-            this.getCategory();
+            // console.log("进入了");
+            this.getGoodslist();
             this.rest();
           } else {
             this.$message.error(res.msg);
@@ -277,11 +301,14 @@ export default {
       });
     },
     reset() {
-      console.log(goodsinfo);
+      // console.log(goodsinfo);
 
       if (this.info.istit) {
-        this.filelist = [];
-        this.goodsinfo = { ...opgoodsinfo };
+        
+        (this.filelist=this.erjifl = this.spsx = []), (this.goodsinfo = { ...opgoodsinfo });
+        // console.log();
+        this.$refs.wangedit.clear();
+
       } else {
         // 修改
         this.goodsinfor(goodsinfo);
@@ -289,8 +316,8 @@ export default {
       }
     },
     rest() {
-      this.filelist = [];
-      this.goodsinfo = { ...opgoodsinfo };
+      this.$refs.wangedit.clear();
+      (this.filelist=this.erjifl = this.spsx = []), (this.goodsinfo = { ...opgoodsinfo });
     },
   },
 };

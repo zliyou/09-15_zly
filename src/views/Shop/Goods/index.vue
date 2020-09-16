@@ -15,7 +15,7 @@ import Alter from "./alter";
 import tabl from "./tabl";
 import { mapGetters, mapActions } from "vuex";
 
-import { delRole, getRole, editRole } from "@/require/role";
+import { delGoods, getGoods, editGoods } from "@/require/goods";
 
 export default {
   data() {
@@ -28,7 +28,7 @@ export default {
   },
   created() {},
   async mounted() {
-    let aaa = await getRole();
+    // let aaa = await getGoods();
     // console.log(aaa);
   },
   components: { Alter, tabl },
@@ -45,7 +45,7 @@ export default {
     },
 
     ...mapActions({
-      GetRole: "role/GetRole",
+      getGoodslist: "goods/getGoodslist",
     }),
     async del(item) {
       // console.log(item.id);
@@ -58,7 +58,7 @@ export default {
         .then(async () => {
           let res = await delMenu(item.id);
           if (res.code == 200) {
-            this.GetRole();
+            this.GetGoods();
             this.$message.success(res.msg);
           } else {
             this.$message.error(res.msg);
@@ -70,7 +70,7 @@ export default {
       this.info.altshow = true;
       this.info.istit = false;
       
-      this.$refs.alt.menuinfor(item);
+      this.$refs.alt.goodsinfor(item);
       // console.log(this.$refs.alt.menuinfor);
     },
   },
