@@ -8,7 +8,6 @@ let $axios = axios.create({
 // 添加请求拦截器
 $axios.interceptors.request.use(function (config) {
   // 在发送请求之前做些什么
-
   if(config.url == '/userlogin'){
 
     return config;
@@ -26,7 +25,8 @@ $axios.interceptors.request.use(function (config) {
 $axios.interceptors.response.use(function (response) {
   // 对响应数据做点什么
   if(response.data.code ==403 &&response.data.code ==404){
-    router.replace('/');
+    router.replace('/login');
+    return response.data;
   }else{
     return response.data;
 

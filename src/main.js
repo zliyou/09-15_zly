@@ -11,6 +11,9 @@ import 'element-ui/lib/theme-chalk/index.css'
 
 import filt from '@/filters'
 
+import echarts from 'echarts'
+Vue.prototype.$echarts = echarts
+
 
 Vue.use(ElementUI)
 

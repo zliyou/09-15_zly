@@ -88,16 +88,20 @@ let vuerouter = new Router({
       name: '登录',
       component: () => import('@/views/Login'),
       meta: { title: '登录' }
+    },
+    {
+      path:'/reg',
+      name:'会员注册',
+      component:()=>import('@/views/Reg'),
+      meta:{title:'会员注册'}
     }
 
   ]
 })
 
 vuerouter.beforeEach((to, from, next) => {
-  // next()
-  // console.log(to);
-  // console.log();
-  if (to.path == '/login') {
+  
+  if (to.path == '/login' || to.path=='/reg') {
 
     next();
   } else {
